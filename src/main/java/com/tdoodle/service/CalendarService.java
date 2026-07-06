@@ -1,9 +1,7 @@
 package com.tdoodle.service;
 
 
-import com.tdoodle.exception.TimeSlotInPastException;
-import com.tdoodle.exception.TimeSlotOverlapException;
-import com.tdoodle.exception.TimeSlotTooShortException;
+import com.tdoodle.exception.*;
 import com.tdoodle.persistence.TimeSlotRepository;
 import com.tdoodle.persistence.entity.TimeSlot;
 import com.tdoodle.representation.CreateOrUpdateTimeSlotRequest;
@@ -51,6 +49,25 @@ public class CalendarService {
         }
         if (request.durationInMinutes() <= 0) {
             throw new TimeSlotTooShortException("Duration is invalid.");
+        }
+    }
+
+    @Transactional
+    public void deleteTimeSlot(@NonNull Integer userId, @NonNull Long timeSlotId) {
+    var timeSlot =
+        timeSlotRepository
+            .findById(timeSlotId)
+            .orElseThrow(() -> new NotFoundException("Given time-slot was not found."));
+        validateChangeOfTimeSlotRequest(timeSlot, userId);
+        timeSlotRepository.delete(timeSlot);
+    }
+
+    private void validateChangeOfTimeSlotRequest(TimeSlot timeSlot, Integer userId) {
+        if (!timeSlot.getUserId().equals(userId)) {
+            throw new NotFoundException("Given time-slot was not found.");
+        }
+        if (!timeSlot.getFree()) {
+            throw new ConflictException("Given time-slot is a meeting. Request meeting update/delete.");
         }
     }
 }

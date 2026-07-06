@@ -28,4 +28,12 @@ public class DoodleController {
             @RequestBody CreateOrUpdateTimeSlotRequest createTimeSlotRequest) {
         return ResponseEntity.ok(calendarService.createTimeSlot(userId, createTimeSlotRequest));
     }
+
+    @DeleteMapping(value = "/users/{userId}/time-slots/{timeSlotId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteTimeSlot(
+            @PathVariable("userId") Integer userId,
+            @PathVariable("timeSlotId") Long timeSlotId) {
+        calendarService.deleteTimeSlot(userId, timeSlotId);
+        return ResponseEntity.noContent().build();
+    }
 }
