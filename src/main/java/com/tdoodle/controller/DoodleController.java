@@ -1,5 +1,7 @@
 package com.tdoodle.controller;
 
+import com.tdoodle.representation.TimeSlotResponse;
+import com.tdoodle.service.CalendarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +14,10 @@ import java.util.List;
 @RequestMapping("/tdoodle")
 public class DoodleController {
 
+    private final CalendarService calendarService;
+
     @GetMapping(value = "/users/{userId}/time-slots", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<String>> getTimeSlots(@PathVariable("userId") Integer userId) {
-        //  Return an empty canned response for now.
-        return ResponseEntity.ok(List.of());
+    public ResponseEntity<List<TimeSlotResponse>> getTimeSlots(@PathVariable("userId") Integer userId) {
+        return ResponseEntity.ok(calendarService.getTimeSlots(userId));
     }
 }
