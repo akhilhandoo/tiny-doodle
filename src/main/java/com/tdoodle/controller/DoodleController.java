@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -21,8 +22,9 @@ public class DoodleController {
 
   @GetMapping(value = "/users/{userId}/time-slots", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<TimeSlotResponse>> getTimeSlots(
-      @PathVariable("userId") Integer userId) {
-    return ResponseEntity.ok(calendarService.getTimeSlots(userId));
+      @PathVariable("userId") Integer userId,
+      @RequestParam Map<String, String> queryParams) {
+    return ResponseEntity.ok(calendarService.getTimeSlots(userId, queryParams));
   }
 
   @PostMapping(

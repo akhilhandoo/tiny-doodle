@@ -12,9 +12,15 @@ import com.tdoodle.representation.TimeSlotResponse;
 import com.tdoodle.service.mapper.MeetingMapper;
 import com.tdoodle.service.mapper.TimeSlotMapper;
 import jakarta.transaction.Transactional;
+
+import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +30,59 @@ import org.springframework.stereotype.Service;
 @Service
 public class CalendarService {
 
+  private static final String TIME_FRAME_BEGIN_PARAMETER = "timeFrameBegin";
+  private static final String TIME_FRAME_END_PARAMETER = "timeFrameEnd";
+  private static final Set<String> GET_QUERY_DATE_FILTERS = Set.of(TIME_FRAME_BEGIN_PARAMETER, TIME_FRAME_END_PARAMETER);
   private final TimeSlotRepository timeSlotRepository;
   private final MeetingRepository meetingRepository;
   private final TimeSlotMapper timeSlotMapper;
   private final MeetingMapper meetingMapper;
 
-  public List<TimeSlotResponse> getTimeSlots(Integer userId) {
-    return timeSlotRepository.getAllByUserId(userId).stream()
-        .map(timeSlot -> timeSlotMapper.toTimeSlotResponse(timeSlot))
-        .collect(Collectors.toList());
+  public List<TimeSlotResponse> getTimeSlots(Integer userId, Map<String, String> queryParams) {
+
+    var timeFrameBegin = getTimeFrameValues(queryParams, TIME_FRAME_BEGIN_PARAMETER);
+    var timeFrameEnd = getTimeFrameValues(queryParams, TIME_FRAME_END_PARAMETER);
+    if (!timeFrameBegin.isEmpty() || !timeFrameEnd.isEmpty()) {
+      if (timeFrameBegin.isEmpty() || timeFrameEnd.isEmpty()) {
+        throw new BusinessValidationException("Both timeFrameBegin and timeFrameEnd are required together or not at all.");
+      }
+    }
+    var timeSlots = timeFrameBegin.isEmpty() ? timeSlotRepository.getAllByUserId(userId) : timeSlotRepository.getAllIntersectingTimeSlotsByUser(userId, timeFrameBegin.get(), timeFrameEnd.get());
+    var slotTypeToUse = determineSlotTypeQuery(queryParams);
+    if (!slotTypeToUse.isEmpty()) {
+      if (TimeSlotType.FREE.equals(slotTypeToUse.get())) {
+        timeSlots = timeSlots.stream().filter(timeSlot -> timeSlot.getFree()).collect(Collectors.toList());
+      } else {
+        timeSlots = timeSlots.stream().filter(timeSlot -> !timeSlot.getFree()).collect(Collectors.toList());
+      }
+    }
+    return timeSlots.stream().map(timeSlotMapper::toTimeSlotResponse).collect(Collectors.toList());
+  }
+
+  private Optional<Instant> getTimeFrameValues(Map<String, String> queryParams, String key) {
+    try {
+      if (!GET_QUERY_DATE_FILTERS.contains(key)) {
+        throw new BusinessValidationException("Invalid query parameter: " + key + " in request.");
+      }
+      return Optional.ofNullable(queryParams.get(key)).map(Instant::parse);
+    } catch (DateTimeParseException e) {
+      throw new BusinessValidationException("Invalid date format in request filter.");
+    }
+  }
+
+  private Optional<TimeSlotType> determineSlotTypeQuery(Map<String, String> queryParams) {
+    var slotTypeValue = queryParams.get("slotType");
+    if (null == slotTypeValue) {
+      return Optional.empty();
+    }
+    try {
+      return Optional.of(Enum.valueOf(TimeSlotType.class, slotTypeValue));
+    } catch (IllegalArgumentException ie) {
+      throw new BusinessValidationException("Invalid filter for timeSlotType: " + slotTypeValue + " in request.");
+    } catch (NullPointerException npe) {
+      Optional.empty();
+    }
+    return Optional.empty();
   }
 
   @Transactional

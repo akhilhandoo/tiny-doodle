@@ -36,4 +36,15 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
       nativeQuery = true)
   int getCountOfOverlappingTimeSlotsByUserExceptGivenTimeSlot(
       Integer userId, Instant beginTime, Instant endTime, Long timeSlotId);
+
+  @Query(
+          value =
+                  """
+                            SELECT t.slot_id, t.user_id, t.begin_time, t.duration_in_minutes, t.free FROM time_slot t
+                                WHERE t.user_id = :userId and
+                                ((t.begin_time between :beginTime and :endTime) or
+                                ((t.begin_time + (t.duration_in_minutes * interval '1 minute')) between :beginTime and :endTime))
+                    """,
+          nativeQuery = true)
+  List<TimeSlot> getAllIntersectingTimeSlotsByUser(Integer userId, Instant beginTime, Instant endTime);
 }
