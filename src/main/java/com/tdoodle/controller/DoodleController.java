@@ -1,6 +1,8 @@
 package com.tdoodle.controller;
 
+import com.tdoodle.representation.CreateMeetingRequest;
 import com.tdoodle.representation.CreateOrUpdateTimeSlotRequest;
+import com.tdoodle.representation.MeetingResponse;
 import com.tdoodle.representation.TimeSlotResponse;
 import com.tdoodle.service.CalendarService;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +54,17 @@ public class DoodleController {
       @RequestBody CreateOrUpdateTimeSlotRequest updateTimeSlotRequest) {
     return ResponseEntity.ok(
         calendarService.updateTimeSlot(userId, timeSlotId, updateTimeSlotRequest));
+  }
+
+  @PostMapping(
+      value = "/users/{userId}/time-slots/{timeSlotId}/meetings",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<MeetingResponse> createMeeting(
+      @PathVariable("userId") Integer userId,
+      @PathVariable("timeSlotId") Long timeSlotId,
+      @RequestBody CreateMeetingRequest createMeetingRequest) {
+    return ResponseEntity.ok(
+        calendarService.createMeeting(userId, timeSlotId, createMeetingRequest));
   }
 }

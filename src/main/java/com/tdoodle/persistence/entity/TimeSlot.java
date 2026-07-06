@@ -1,12 +1,13 @@
 package com.tdoodle.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.Instant;
+import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Entity
+@ToString
 @Table(name = "time_slot")
 public class TimeSlot {
 
@@ -26,6 +27,7 @@ public class TimeSlot {
 
   private Boolean free;
 
+  @ToString.Exclude
   @OneToOne(fetch = FetchType.EAGER, mappedBy = "timeSlot")
   @PrimaryKeyJoinColumn
   private Meeting meeting;
