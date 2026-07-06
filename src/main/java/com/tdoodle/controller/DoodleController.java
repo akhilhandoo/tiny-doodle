@@ -15,25 +15,42 @@ import java.util.List;
 @RequestMapping("/tdoodle")
 public class DoodleController {
 
-    private final CalendarService calendarService;
+  private final CalendarService calendarService;
 
-    @GetMapping(value = "/users/{userId}/time-slots", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TimeSlotResponse>> getTimeSlots(@PathVariable("userId") Integer userId) {
-        return ResponseEntity.ok(calendarService.getTimeSlots(userId));
-    }
+  @GetMapping(value = "/users/{userId}/time-slots", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<TimeSlotResponse>> getTimeSlots(
+      @PathVariable("userId") Integer userId) {
+    return ResponseEntity.ok(calendarService.getTimeSlots(userId));
+  }
 
-    @PostMapping(value = "/users/{userId}/time-slots", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TimeSlotResponse> createTimeSlot(
-            @PathVariable("userId") Integer userId,
-            @RequestBody CreateOrUpdateTimeSlotRequest createTimeSlotRequest) {
-        return ResponseEntity.ok(calendarService.createTimeSlot(userId, createTimeSlotRequest));
-    }
+  @PostMapping(
+      value = "/users/{userId}/time-slots",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<TimeSlotResponse> createTimeSlot(
+      @PathVariable("userId") Integer userId,
+      @RequestBody CreateOrUpdateTimeSlotRequest createTimeSlotRequest) {
+    return ResponseEntity.ok(calendarService.createTimeSlot(userId, createTimeSlotRequest));
+  }
 
-    @DeleteMapping(value = "/users/{userId}/time-slots/{timeSlotId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteTimeSlot(
-            @PathVariable("userId") Integer userId,
-            @PathVariable("timeSlotId") Long timeSlotId) {
-        calendarService.deleteTimeSlot(userId, timeSlotId);
-        return ResponseEntity.noContent().build();
-    }
+  @DeleteMapping(
+      value = "/users/{userId}/time-slots/{timeSlotId}",
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Void> deleteTimeSlot(
+      @PathVariable("userId") Integer userId, @PathVariable("timeSlotId") Long timeSlotId) {
+    calendarService.deleteTimeSlot(userId, timeSlotId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping(
+      value = "/users/{userId}/time-slots/{timeSlotId}",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<TimeSlotResponse> updateTimeSlot(
+      @PathVariable("userId") Integer userId,
+      @PathVariable("timeSlotId") Long timeSlotId,
+      @RequestBody CreateOrUpdateTimeSlotRequest updateTimeSlotRequest) {
+    return ResponseEntity.ok(
+        calendarService.updateTimeSlot(userId, timeSlotId, updateTimeSlotRequest));
+  }
 }

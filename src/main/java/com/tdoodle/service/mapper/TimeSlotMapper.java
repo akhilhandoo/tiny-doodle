@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(config = MapperConfig.class)
 public interface TimeSlotMapper {
-    TimeSlotResponse toTimeSlotResponse(TimeSlot timeSlot);
+  TimeSlotResponse toTimeSlotResponse(TimeSlot timeSlot);
 }

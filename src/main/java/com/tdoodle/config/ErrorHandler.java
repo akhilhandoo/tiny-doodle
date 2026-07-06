@@ -12,18 +12,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(com.tdoodle.exception.BusinessValidationException.class)
-    public ResponseEntity<String> handleException(BusinessValidationException e) {
-        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage())).build();
-    }
+  @ExceptionHandler(com.tdoodle.exception.BusinessValidationException.class)
+  public ResponseEntity<String> handleException(BusinessValidationException e) {
+    return ResponseEntity.of(
+            ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage()))
+        .build();
+  }
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<String> handleException(ConflictException e) {
-        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage())).build();
-    }
+  @ExceptionHandler(ConflictException.class)
+  public ResponseEntity<String> handleException(ConflictException e) {
+    return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage()))
+        .build();
+  }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleException(NotFoundException e) {
-        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage())).build();
-    }
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<String> handleException(NotFoundException e) {
+    return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage()))
+        .build();
+  }
 }

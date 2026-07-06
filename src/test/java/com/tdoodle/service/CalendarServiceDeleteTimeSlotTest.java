@@ -1,13 +1,12 @@
 package com.tdoodle.service;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
-
 import com.tdoodle.exception.ConflictException;
 import com.tdoodle.exception.NotFoundException;
 import com.tdoodle.persistence.TimeSlotRepository;
 import com.tdoodle.persistence.entity.TimeSlot;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
