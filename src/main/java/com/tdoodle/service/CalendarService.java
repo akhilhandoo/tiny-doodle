@@ -94,7 +94,8 @@ public class CalendarService {
             userId,
             request.beginTime(),
             request.beginTime().plus(request.durationInMinutes(), ChronoUnit.MINUTES));
-    if (overlappingTimeSlotsCount > 0) {
+    var exactTimeSlotOptional = timeSlotRepository.findTimeSlotByUserAndBeginTimeAndDurationInMinutes(userId, request.beginTime(), request.durationInMinutes());
+    if (overlappingTimeSlotsCount > 0 || exactTimeSlotOptional.isPresent()) {
       throw new TimeSlotOverlapException("Timeslot overlaps with an existing one.");
     }
     var timeSlot = new TimeSlot();

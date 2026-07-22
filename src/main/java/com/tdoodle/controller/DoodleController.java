@@ -5,6 +5,7 @@ import com.tdoodle.representation.CreateOrUpdateTimeSlotRequest;
 import com.tdoodle.representation.MeetingResponse;
 import com.tdoodle.representation.TimeSlotResponse;
 import com.tdoodle.service.CalendarService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class DoodleController {
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<TimeSlotResponse> createTimeSlot(
       @PathVariable("userId") Integer userId,
-      @RequestBody CreateOrUpdateTimeSlotRequest createTimeSlotRequest) {
+      @Valid @RequestBody CreateOrUpdateTimeSlotRequest createTimeSlotRequest) {
     return ResponseEntity.ok(calendarService.createTimeSlot(userId, createTimeSlotRequest));
   }
 

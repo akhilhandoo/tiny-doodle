@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
@@ -23,6 +24,15 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
             """,
       nativeQuery = true)
   int getCountOfOverlappingTimeSlotsByUser(Integer userId, Instant beginTime, Instant endTime);
+
+  @Query(
+          value =
+                  """
+                            SELECT t.slot_id, t.user_id, t.begin_time, t.duration_in_minutes, t.free FROM time_slot t
+                                WHERE t.user_id = :userId and t.begin_time = :beginTime and t.duration_in_minutes = :durationInMinutes
+                    """,
+          nativeQuery = true)
+  Optional<TimeSlot> findTimeSlotByUserAndBeginTimeAndDurationInMinutes(Integer userId, Instant beginTime, int durationInMinutes);
 
   @Query(
       value =

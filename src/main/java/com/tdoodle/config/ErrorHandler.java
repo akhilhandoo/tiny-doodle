@@ -1,22 +1,31 @@
 package com.tdoodle.config;
 
 import com.tdoodle.exception.BusinessValidationException;
+import com.tdoodle.exception.ClientErrorException;
 import com.tdoodle.exception.ConflictException;
 import com.tdoodle.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ErrorHandler {
 
-  @ExceptionHandler(com.tdoodle.exception.BusinessValidationException.class)
-  public ResponseEntity<String> handleException(BusinessValidationException e) {
+  @ExceptionHandler(ClientErrorException.class)
+  public ResponseEntity<String> handleException(Exception e) {
     return ResponseEntity.of(
             ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage()))
         .build();
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<String> handleValidationFailure(MethodArgumentNotValidException e) {
+    return ResponseEntity.of(
+                    ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getBindingResult().getFieldErrors().get(0).getDefaultMessage()))
+            .build();
   }
 
   @ExceptionHandler(ConflictException.class)
